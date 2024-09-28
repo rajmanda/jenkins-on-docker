@@ -3,14 +3,19 @@ FROM jenkins/jenkins:lts
 # Switch to root to install packages
 USER root
 
-# Install JDK 17, Maven, and OpenSSL
-RUN apt-get update && apt-get install -y openjdk-17-jdk maven openssl && \
+# Install JDK 17 and Maven
+RUN apt-get update && apt-get install -y openjdk-17-jdk maven && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set JAVA_HOME and MAVEN_HOME environment variables
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV MAVEN_HOME=/usr/share/maven
-ENV PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
+# Create a script to print environment variables and keep the container running
+RUN echo '#!/bin/bash' > /usr/local/bin/print_env_vars.sh && \
+    echo 'echo "JAVA_HOME: $JAVA_HOME"' >> /usr/local/bin/print_env_vars.sh && \
+    echo 'echo "MAVEN_HOME: $MAVEN_HOME"' >> /usr/local/bin/print_env_vars.sh && \
+    echo 'echo "PATH: $PATH"' >> /usr/local/bin/print_env_vars.sh && \
+    echo 'echo "Maven Version:" && mvn -v' >> /usr/local/bin/print_env_vars.sh && \
+    # Keep the container running with a default command
+    #echo 'tail -f /dev/null' >> /usr/local/bin/print_env_vars.sh && \
+    chmod +x /usr/local/bin/print_env_vars.sh
 
 # Create the .ssh directory in Jenkins home with correct permissions
 RUN mkdir -p /var/jenkins_home/.ssh && \
