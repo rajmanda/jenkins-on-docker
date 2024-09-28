@@ -28,17 +28,26 @@ RUN mkdir -p /var/jenkins_home/.ssh && \
 #     chmod 600 /var/jenkins_home/.ssh/id_rsa && \
 #     chmod 644 /var/jenkins_home/.ssh/id_rsa.pub
 
-# Copy init script to create admin user
-COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/admin.groovy
+
+# Create the init scripts and set permissions
+COPY src/groovy/* /usr/share/jenkins/ref/init.groovy.d/
+
+# Set ownership and make scripts executable
+RUN chown jenkins:jenkins /usr/share/jenkins/ref/init.groovy.d/*.groovy && \
+    chmod +x /usr/share/jenkins/ref/init.groovy.d/*.groovy
 
 # Create entrypoint script for adding known hosts
 COPY src/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Install the SSH Agent plugin
-RUN jenkins-plugin-cli --plugins ssh-agent 
-# Install the matrix-auth  plugin
-RUN jenkins-plugin-cli --plugins matrix-auth
+# Install plugins with specific versions
+RUN jenkins-plugin-cli --plugins \
+    git:latest \
+    workflow-aggregator:latest \
+    ssh-agent:latest \
+    blueocean:latest \
+    credentials-binding:latest \
+    matrix-auth:latest
 
 # Switch back to jenkins user
 USER jenkins
