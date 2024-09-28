@@ -1,5 +1,7 @@
 import jenkins.model.*
 import hudson.security.*
+import hudson.security.GlobalMatrixAuthorizationStrategy
+
 
 def instance = Jenkins.getInstance()
 def strategy = new GlobalMatrixAuthorizationStrategy()

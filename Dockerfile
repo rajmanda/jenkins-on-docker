@@ -36,7 +36,9 @@ COPY src/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Install the SSH Agent plugin
-RUN jenkins-plugin-cli --plugins ssh-agent
+RUN jenkins-plugin-cli --plugins ssh-agent 
+# Install the matrix-auth  plugin
+RUN jenkins-plugin-cli --plugins matrix-auth
 
 # Switch back to jenkins user
 USER jenkins
