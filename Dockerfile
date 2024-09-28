@@ -67,4 +67,4 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 #-v jenkins_home:/var/jenkins_home: Creates a named volume to persist Jenkins data.
 
 ######## RUN ngrok to Expose Jenkins
-#docker run --net=host -it -e NGROK_AUTHTOKEN=2mW9616b5xPpcagIIBn3a0c4jFZ_2JeyoRDcpBitQCMxoSeWH ngrok/ngrok:latest http 8080
+#docker run --net=host -it -e NGROK_AUTHTOKEN=2mW9616b5xPpcagIIBn3a0c4jFZ_2JeyoRDcpBitQCMxoSeWH ngrok/ngrok:latest http 8081
