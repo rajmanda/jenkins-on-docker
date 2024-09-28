@@ -37,7 +37,7 @@ RUN chown jenkins:jenkins /usr/share/jenkins/ref/init.groovy.d/*.groovy && \
     chmod +x /usr/share/jenkins/ref/init.groovy.d/*.groovy
 
 # Create entrypoint script for adding known hosts
-COPY src/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY src/scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Install plugins with specific versions
@@ -47,7 +47,10 @@ RUN jenkins-plugin-cli --plugins \
     ssh-agent:latest \
     blueocean:latest \
     credentials-binding:latest \
-    matrix-auth:latest
+    matrix-auth:latest \
+    credentials:latest \           
+    scm-api:latest \               
+    git-client:latest             
 
 # Switch back to jenkins user
 USER jenkins
