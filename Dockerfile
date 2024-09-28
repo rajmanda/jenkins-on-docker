@@ -22,11 +22,11 @@ RUN mkdir -p /var/jenkins_home/.ssh && \
     chmod 700 /var/jenkins_home/.ssh && \
     chown -R jenkins:jenkins /var/jenkins_home/.ssh
 
-# Generate RSA key pair for Jenkins in /var/jenkins_home/.ssh
-RUN ssh-keygen -t rsa -b 2048 -f /var/jenkins_home/.ssh/id_rsa -q -N "" && \
-    chown jenkins:jenkins /var/jenkins_home/.ssh/id_rsa /var/jenkins_home/.ssh/id_rsa.pub && \
-    chmod 600 /var/jenkins_home/.ssh/id_rsa && \
-    chmod 644 /var/jenkins_home/.ssh/id_rsa.pub
+# # Generate RSA key pair for Jenkins in /var/jenkins_home/.ssh
+# RUN ssh-keygen -t rsa -b 2048 -f /var/jenkins_home/.ssh/id_rsa -q -N "" && \
+#     chown jenkins:jenkins /var/jenkins_home/.ssh/id_rsa /var/jenkins_home/.ssh/id_rsa.pub && \
+#     chmod 600 /var/jenkins_home/.ssh/id_rsa && \
+#     chmod 644 /var/jenkins_home/.ssh/id_rsa.pub
 
 # Copy init script to create admin user
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/admin.groovy
@@ -49,8 +49,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # #####  To Run Jenkins on local use this command. ######
 # docker build --no-cache -t dockerrajmanda/jenkins:latest
-#  docker run -d -p 8080:8080 -p 50000:50000 --name jenkins dockerrajmanda/jenkins:latest
-#  docker run -d -p 8080:8080 -p 50000:50000 --name jenkins dockerrajmanda/jenkins:latest --mount type=bind,source=jenkins_home,target=/var/jenkins_home
+# docker run -d -p 8080:8080 -p 50000:50000 --name jenkins -v ~/.ssh:/var/jenkins_home/.ssh:Z  dockerrajmanda/jenkins:latest
 
 #-d: Runs the container in detached mode (in the background).
 #-p 8080:8080: Maps port 8080 on your localhost to port 8080 in the container (Jenkins default web interface).
