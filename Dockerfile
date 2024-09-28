@@ -1,0 +1,55 @@
+FROM jenkins/jenkins:lts
+
+# Switch to root to install packages
+USER root
+
+# Install JDK 17, Maven, and OpenSSL
+RUN apt-get update && apt-get install -y openjdk-17-jdk maven openssl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME and MAVEN_HOME environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV MAVEN_HOME=/usr/share/maven
+ENV PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
+
+# Create the .ssh directory in Jenkins home with correct permissions
+RUN mkdir -p /var/jenkins_home/.ssh && \
+    chmod 700 /var/jenkins_home/.ssh && \
+    chown -R jenkins:jenkins /var/jenkins_home/.ssh
+
+# Generate RSA key pair for Jenkins in /var/jenkins_home/.ssh
+RUN ssh-keygen -t rsa -b 2048 -f /var/jenkins_home/.ssh/id_rsa -q -N "" && \
+    chown jenkins:jenkins /var/jenkins_home/.ssh/id_rsa /var/jenkins_home/.ssh/id_rsa.pub && \
+    chmod 600 /var/jenkins_home/.ssh/id_rsa && \
+    chmod 644 /var/jenkins_home/.ssh/id_rsa.pub
+
+# Copy init script to create admin user
+COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/admin.groovy
+
+# Create entrypoint script for adding known hosts
+COPY src/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Install the SSH Agent plugin
+RUN jenkins-plugin-cli --plugins ssh-agent
+
+# Switch back to jenkins user
+USER jenkins
+
+# Set entrypoint script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+
+# #####  To Run Jenkins on local use this command. ######
+# docker build --no-cache -t dockerrajmanda/jenkins:latest
+#  docker run -d -p 8080:8080 -p 50000:50000 --name jenkins dockerrajmanda/jenkins:latest
+#  docker run -d -p 8080:8080 -p 50000:50000 --name jenkins dockerrajmanda/jenkins:latest --mount type=bind,source=jenkins_home,target=/var/jenkins_home
+
+#-d: Runs the container in detached mode (in the background).
+#-p 8080:8080: Maps port 8080 on your localhost to port 8080 in the container (Jenkins default web interface).
+#-p 50000:50000: Maps port 50000 for Jenkins agents.
+#--name jenkins: Names the container "jenkins".
+#-v jenkins_home:/var/jenkins_home: Creates a named volume to persist Jenkins data.
+
+######## RUN ngrok to Expose Jenkins
+#docker run --net=host -it -e NGROK_AUTHTOKEN=2mW9616b5xPpcagIIBn3a0c4jFZ_2JeyoRDcpBitQCMxoSeWH ngrok/ngrok:latest http 8080
