@@ -3,7 +3,6 @@ import hudson.model.*
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition
 import hudson.plugins.git.*
-import hudson.triggers.SCMTrigger
 
 // Define the Jenkins instance and the name for the new pipeline job
 def instance = Jenkins.getInstance()
@@ -24,14 +23,15 @@ def repoUrl = 'git@github.com:rajmanda/rsvpbackend.git'
 def branch = 'main'  // Change branch if necessary
 def credentialsId = 'GIT_CREDENTIALS' // Use your Git SSH credentials ID
 
-// Set the pipeline definition to use the Jenkinsfile from the repo
+// Set up the Git repository
 def scm = new GitSCM(
-    repoUrl,               // Git repository URL
-    [new BranchSpec(branch)], // Branch to build
-    false,                  // Do not configure repository browser
-    Collections.emptyList(), // Submodule configs
-    null,                    // Git browser (not needed)
-    credentialsId            // Credentials ID to access repo
+    GitSCM.createRepoList("git@github.com:rajmanda/rsvpbackend.git", null),
+    Collections.singletonList(new BranchSpec("*/main")),
+    false,
+    Collections.emptyList(),
+    null,
+    null,
+    Collections.emptyList()
 )
 job.definition = new CpsScmFlowDefinition(scm, "Jenkinsfile")
 
