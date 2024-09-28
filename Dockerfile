@@ -49,7 +49,7 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # #####  To Run Jenkins on local use this command. ######
 # docker build --no-cache -t dockerrajmanda/jenkins:latest
-# docker run -d -p 8080:8080 -p 50000:50000 --name jenkins -v ~/.ssh:/var/jenkins_home/.ssh:Z  dockerrajmanda/jenkins:latest
+# docker run -d -p 8080:8080 -p 50000:50000 --name jenkins -v ~/.ssh:/var/jenkins_home/.ssh:Z  dockerrajmanda/jenkins:latest  or docker-compose up -d
 
 #-d: Runs the container in detached mode (in the background).
 #-p 8080:8080: Maps port 8080 on your localhost to port 8080 in the container (Jenkins default web interface).
